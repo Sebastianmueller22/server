@@ -69,6 +69,7 @@ class AppSettingsController extends Controller {
 		private CategoryFetcher $categoryFetcher,
 		private AppFetcher $appFetcher,
 		private IFactory $l10nFactory,
+		private IGroupManager $groupManager,
 		private BundleFetcher $bundleFetcher,
 		private Installer $installer,
 		private IURLGenerator $urlGenerator,
@@ -93,6 +94,17 @@ class AppSettingsController extends Controller {
 		$this->initialState->provideInitialState('appstoreEnabled', $this->config->getSystemValueBool('appstoreenabled', true));
 		$this->initialState->provideInitialState('appstoreBundles', $this->getBundles());
 		$this->initialState->provideInitialState('appstoreUpdateCount', count($this->getAppsWithUpdates()));
+
+		$groups = array_map(function (IGroup $group) {
+			return [
+				'id' => $group->getGID(),
+				'name' => $group->getDisplayName(),
+			];
+		}, $this->groupManager->search('', 5));
+
+		$serverData['systemGroups'] = $groups;
+
+		$this->initialState->provideInitialState('usersSettings', $serverData);
 
 		if ($this->appManager->isEnabledForAnyone('app_api')) {
 			try {
