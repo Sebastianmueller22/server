@@ -95,12 +95,10 @@ class AppSettingsController extends Controller {
 		$this->initialState->provideInitialState('appstoreBundles', $this->getBundles());
 		$this->initialState->provideInitialState('appstoreUpdateCount', count($this->getAppsWithUpdates()));
 
-		$groups = array_map(function (IGroup $group) {
-			return [
-				'id' => $group->getGID(),
-				'name' => $group->getDisplayName(),
-			];
-		}, $this->groupManager->search('', 5));
+		$groups = array_map(static fn (IGroup $group): array => [
+			'id' => $group->getGID(),
+			'name' => $group->getDisplayName(),
+		], $this->groupManager->search('', 5));
 
 		$this->initialState->provideInitialState('usersSettings', [ 'systemGroups' => $groups]);
 
